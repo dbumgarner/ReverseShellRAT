@@ -1,0 +1,29 @@
+Summary: 
+	This exploit backdoors an unlocked, unattended, and networked Windows machine in approximately five seconds via Reverse Shell by exploiting the inherent trust of Human Interface Devices (HID) with a two dollar piece of hardware. 
+
+Detail:
+	Windows default loads and installs drivers for all USB HIDs for immediate usage, which the Digispark pretends to be. After connection the Digispark pipes in pre-set instructions in the form of keyboard keystrokes which Windows is unable to differentiate from normal user operation of a manual keyboard. By exploiting this trust, we are able to open powershell, escalate permissions to an admin powershell, download our malicious Reverse Shell payload, change powershell permissions to allow it to run, and execute it in hidden mode during which time it also creates a .bat file in Windows Startup that will auto-launch the backdoor on user sign-in.
+	
+	The controlling machine opens netcat listening on a specified port and awaits an incoming connection from the target machine at which point it has an admin shell connection on the backend. 
+	
+	This is a direct adaptation of the name-brand "Bad USB", the Rubber Ducky by Hak5, and is provided entirely as is for educational and research purposes. This software carries no liabilibility or responsibility for any illegal, unethical, malicious, or otherwise bad-faith usage; and the author assumes no legal, financial, nor any other accountability for usage thereof. 
+	
+Requirements:
+	- Digistump Digispark USB development board, and configured IDE	
+			https://digistump.com/wiki/digispark/tutorials/connecting
+	- Ability to host a file to the web
+	- Physical access to the target machine
+	- A networked control machine with Netcat to receive shell
+	
+Usage:
+	+ Edit rt.ps1 to include the external IP of the control machine and the port you are forwarding to it
+	+ Host the modified rt.ps1 script on a remote site accessible by the target machine
+	+ Edit digispark_payload.ino to target your own rt.ps1 script on line 23
+	+ Flash the modified digispark_payload.ino file to your Digispark
+	+ Execute the following in bash on your controlling machine to open netcat listening on the specified port
+ 
+		while true; do nc -lvp your_chosen_port; done;
+ 	
+	+ Plug the pwn drive into the target machine
+	+ Await the blinking light on the pwn drive indicating the payload has completed
+	+ Remove the pwn drive and enjoy your remote shell connection from your netcat machine
